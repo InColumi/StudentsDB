@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE students[
+	<!ELEMENT students (student+)>
+	<!ELEMENT student (id, firstName, lastName, course)>
+	<!ELEMENT id (#PCDATA)>
+	<!ELEMENT firstName (#PCDATA)>
+	<!ELEMENT lastName (#PCDATA)>
+	<!ELEMENT course (#PCDATA)>
+]>
+<students>
+	<student>
+		<id>1</id>
+		<firstName>Jon</firstName>
+		<lastName>Broun</lastName>
+		<course>2</course>
+	</student>
+	<student>
+		<id>2</id>
+		<firstName>David</firstName>
+		<lastName>Cunningham</lastName>
+		<course>4</course>
+	</student>
+	<student>
+		<id>3</id>
+		<firstName>Carol</firstName>
+		<lastName>Townsend</lastName>
+		<course>5</course>
+	</student>
+	<student>
+		<id>4</id>
+		<firstName>Harriet</firstName>
+		<lastName>Cross</lastName>
+		<course>2</course>
+	</student>
+	<student>
+		<id>5</id>
+		<firstName>Myron</firstName>
+		<lastName>Townsend</lastName>
+		<course>1</course>
+	</student>
+</students>
