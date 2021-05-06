@@ -3,11 +3,26 @@ using System.Xml;
 
 namespace StudentsDB
 {
+    /// <summary>
+    /// Класс Предмет наследуте интерфейс IConverter
+    /// </summary>
     class Subject : IConverter
     {
+        /// <summary>
+        /// Id предмета
+        /// </summary>
         public int ID { get; private set; }
+        /// <summary>
+        /// Название предмета
+        /// </summary>
         public string Name { get; private set; }
+        /// <summary>
+        /// ID студента
+        /// </summary>
         public int IDStudent { get; private set; }
+        /// <summary>
+        /// Оценка
+        /// </summary>
         public int Assessment { get; private set; }
 
         public Subject(){}
