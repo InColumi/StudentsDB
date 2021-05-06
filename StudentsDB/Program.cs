@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 
@@ -43,6 +39,8 @@ namespace StudentsDB
             bool isExit = false;
 
             int numberOfCommand = 0;
+            string pathStudents = "..\\..\\DB\\Students";
+            string pathSubjects = "..\\..\\DB\\Subjects";
 
             while (isExit == false)
             {
@@ -58,8 +56,8 @@ namespace StudentsDB
 
                 numberOfCommand = GetCorrectInput();
 
-                List<IConverter> students = GetFromXML("..\\..\\DB\\Students", new Student().ConvertFrom);
-                List<IConverter> subjects = GetFromXML("..\\..\\DB\\Subjects", new Subject().ConvertFrom);
+                List<IConverter> students = GetFromXML(pathStudents, new Student().ConvertFrom);
+                List<IConverter> subjects = GetFromXML(pathSubjects, new Subject().ConvertFrom);
                 switch (numberOfCommand)
                 {
                     case 1:
@@ -69,8 +67,10 @@ namespace StudentsDB
                         ShowInfo(subjects);
                         break;
                     case 3:
+                        AddSubjectToFile(pathSubjects); 
                         break;
                     case 4:
+                        AddStudentToFile(pathStudents);
                         break;
                     case 5:
                         ShowSubjectByStudents(students, subjects);
@@ -85,12 +85,73 @@ namespace StudentsDB
                     case 8:
                         Console.Clear();
                         break;
-
                     default:
                         Console.WriteLine("Неверная команда!");
                         break;
                 }
             }
+        }
+
+        private static void AddSubjectToFile(string fileName)
+        {
+            string path = $"{fileName}.xml";
+            XmlDocument xDoc = new XmlDocument();
+            xDoc.Load(path);
+            XmlElement xRoot = xDoc.DocumentElement;
+            // создаем новый элемент subject
+            XmlElement subjectElem = xDoc.CreateElement("subject");
+            // создаем элементы company и age
+            XmlElement idElem = xDoc.CreateElement("id");
+            XmlElement nameElem = xDoc.CreateElement("name");
+            XmlElement idStudentElem = xDoc.CreateElement("idStudent");
+            XmlElement assessmentElem = xDoc.CreateElement("assessment");
+
+            idElem.InnerText = GetInput("Введите ID предмета: ");
+            nameElem.InnerText = GetInput("Введите название предмета: ");
+            idStudentElem.InnerText = GetInput("Введите ID студента: ");
+            assessmentElem.InnerText = GetInput("Введите оценку: ");
+
+            subjectElem.AppendChild(idElem);
+            subjectElem.AppendChild(nameElem);
+            subjectElem.AppendChild(idStudentElem);
+            subjectElem.AppendChild(assessmentElem);
+            xRoot.AppendChild(subjectElem);
+            xDoc.Save(path);
+            Console.WriteLine("Предмет добавлен");
+        }
+
+        private static string GetInput(string name)
+        {
+            Console.Write(name);
+            return Console.ReadLine();
+        }
+
+        private static void AddStudentToFile(string fileName)
+        {
+            string path = $"{fileName}.xml";
+            XmlDocument xDoc = new XmlDocument();
+            xDoc.Load(path);
+            XmlElement xRoot = xDoc.DocumentElement;
+            // создаем новый элемент student
+            XmlElement studentElem = xDoc.CreateElement("student");
+
+            XmlElement idElem = xDoc.CreateElement("id");
+            XmlElement firstNameElem = xDoc.CreateElement("firstName");
+            XmlElement lastNameElem = xDoc.CreateElement("lastName");
+            XmlElement courseElem = xDoc.CreateElement("course");
+
+            idElem.InnerText = GetInput("Введите ID студента: ");
+            firstNameElem.InnerText = GetInput("Введите Имя студента: ");
+            lastNameElem.InnerText = GetInput("Введите Фамилияю студента: ");
+            courseElem.InnerText = GetInput("Введите курс студента: ");
+
+            studentElem.AppendChild(idElem);
+            studentElem.AppendChild(firstNameElem);
+            studentElem.AppendChild(lastNameElem);
+            studentElem.AppendChild(courseElem);
+            xRoot.AppendChild(studentElem);
+            xDoc.Save(path);
+            Console.WriteLine("Студент добавлен");
         }
 
         private static void ShowStudentsBySubjects(List<IConverter> students, List<IConverter> subjects)
