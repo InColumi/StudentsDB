@@ -14,4 +14,28 @@
 		<idStudent>1</idStudent>
 		<assessment>5</assessment>
 	</subject>
+	<subject>
+		<id>2</id>
+		<name>Предмет 2</name>
+		<idStudent>2</idStudent>
+		<assessment>4</assessment>
+	</subject>
+	<subject>
+		<id>3</id>
+		<name>Предмет 3</name>
+		<idStudent>3</idStudent>
+		<assessment>4</assessment>
+	</subject>
+	<subject>
+		<id>4</id>
+		<name>Предмет 4</name>
+		<idStudent>4</idStudent>
+		<assessment>3</assessment>
+	</subject>
+	<subject>
+		<id>5</id>
+		<name>Предмет 5</name>
+		<idStudent>5</idStudent>
+		<assessment>2</assessment>
+	</subject>
 </subjects>

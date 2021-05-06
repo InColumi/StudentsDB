@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -10,39 +11,39 @@ namespace StudentsDB
 {
     class Program
     {
+        delegate IConverter Convert(XmlNode node);
         static void Main(string[] args)
         {
-            //XmlDocument xmlDocument = new XmlDocument();
-            //try
-            //{
-            //    xmlDocument.Load("DB/Students.xml");
-            //}
-            //catch (Exception exc)
-            //{
-            //    Console.WriteLine(exc.Message);
-            //    Console.ReadKey();
-            //    Environment.Exit(1);
-            //}
-
-
-            //XmlNode xRoot = xmlDocument.DocumentElement;
-            //foreach (XmlNode node in xRoot)
-            //{
-            //    foreach (XmlNode childNode in node.ChildNodes)
-            //    {
-            //        Console.WriteLine(childNode.InnerText);
-            //    }
-            //}
             ChooseCommand();
             Console.ReadKey();
+        }
+
+        static int GetCorrectInput()
+        {
+            string input;
+            int numberOfCommand = 0;
+            bool isCorrect = false;
+            while (isCorrect == false)
+            {
+                input = Console.ReadLine();
+                if (int.TryParse(input, out numberOfCommand))
+                {
+                    isCorrect = true;
+                }
+                else
+                {
+                    Console.WriteLine("Введите корректный номер команды!");
+                }
+            }
+            return numberOfCommand;
         }
 
         static void ChooseCommand()
         {
             bool isExit = false;
-            bool isCorrect = false;
+
             int numberOfCommand = 0;
-            string input;
+
             while (isExit == false)
             {
                 Console.WriteLine("Выберете команду: ");
@@ -54,35 +55,30 @@ namespace StudentsDB
                 Console.WriteLine("\t 6 - показать студентов конкретного предмета.");
                 Console.WriteLine("\t 7 - выход.");
                 Console.Write("\t 8 - очистить консоль.\n>");
-                
-                while (isCorrect == false)
-                {
-                    input = Console.ReadLine();
-                    if (int.TryParse(input, out numberOfCommand))
-                    {
-                        isCorrect = true;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Введите корректный номер команды!");
-                    }
-                }
 
+                numberOfCommand = GetCorrectInput();
+
+                List<IConverter> students = GetFromXML("..\\..\\DB\\Students", new Student().ConvertFrom);
+                List<IConverter> subjects = GetFromXML("..\\..\\DB\\Subjects", new Subject().ConvertFrom);
                 switch (numberOfCommand)
                 {
                     case 1:
+                        ShowInfo(students);
                         break;
                     case 2:
+                        ShowInfo(subjects);
                         break;
                     case 3:
                         break;
                     case 4:
                         break;
                     case 5:
+                        ShowSubjectByStudents(students, subjects);
                         break;
                     case 6:
+                        ShowStudentsBySubjects(students, subjects);
                         break;
-                    case 7: 
+                    case 7:
                         isExit = true;
                         Console.WriteLine("Программа закончила свою работу!");
                         break;
@@ -94,56 +90,112 @@ namespace StudentsDB
                         Console.WriteLine("Неверная команда!");
                         break;
                 }
-                isCorrect = false;
             }
         }
-    }
 
-    class Subject
-    {
-        public UInt64 ID { get; private set; }
-        public string Name { get; private set; }
-        public UInt64 IDStudent { get; private set; }
-        public UInt64 Assessment { get; private set; }
-
-        public Subject(ulong iD, string name, ulong iDStudent, ulong assessment)
+        private static void ShowStudentsBySubjects(List<IConverter> students, List<IConverter> subjects)
         {
-            ID = iD;
-            Name = name;
-            IDStudent = iDStudent;
-            Assessment = assessment;
+            ShowInfo(subjects);
+            Console.WriteLine("Введите ID предмета: ");
+            int idSubject = GetCorrectInput();
+            bool isExist = false;
+            foreach (var subject in subjects)
+            {
+                Subject subj = subject as Subject;
+                if (subj.ID == idSubject)
+                {
+                    subj.ShowInfo();
+                    isExist = true;
+                    break;
+                }
+            }
+
+            if (isExist == false)
+            {
+                Console.WriteLine("Такого предмета нет!");
+                return;
+            }
+
+            foreach (var student in students)
+            {
+                Student stud = student as Student;
+                foreach (var subject in subjects)
+                {
+                    Subject subj = subject as Subject;
+                    if (subj.ID == idSubject && subj.IDStudent == stud.ID)
+                    {
+                        student.ShowInfo();
+                    }
+                }
+            }
         }
 
-        public void ShowInfo()
+        private static void ShowSubjectByStudents(List<IConverter> students, List<IConverter> subjects)
         {
-            Console.WriteLine($"ID subject: {ID}");
-            Console.WriteLine($"\tName: {Name}");
-            Console.WriteLine($"\tID student: {IDStudent}");
-            Console.WriteLine($"\tAssessment: {Assessment}");
+            ShowInfo(students);
+            Console.WriteLine("Введите ID студента: ");
+            int idStudent = GetCorrectInput();
+            bool isExist = false;
+            foreach (var student in students)
+            {
+                Student stud = student as Student;
+                if (stud.ID == idStudent)
+                {
+                    isExist = true;
+                }
+            }
+
+            if (isExist == false)
+            {
+                Console.WriteLine("Такого студента нет!");
+                return;
+            }
+
+            foreach (var subject in subjects)
+            {
+                Subject subj = subject as Subject;
+                if (subj.IDStudent == idStudent)
+                {
+                    subject.ShowInfo();
+                }
+            }
         }
-    }
 
-    class Student
-    {
-        public UInt64 ID { get; private set; }
-        public string FirstName { get; private set; }
-        public string LastName { get; private set; }
-        public int Course { get; private set; }
-
-        public Student(ulong iD, string firstName, string lastName, int course)
+        private static XmlNode GetRootNodeXML(string fileName)
         {
-            ID = iD;
-            FirstName = firstName;
-            LastName = lastName;
-            Course = course;
+            XmlDocument xmlDocument = new XmlDocument();
+            try
+            {
+                xmlDocument.Load($"{fileName}.xml");
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine(exc.Message);
+                Console.ReadKey();
+                Environment.Exit(1);
+            }
+            return xmlDocument.DocumentElement;
         }
 
-        public void ShowInfo()
+        private static List<IConverter> GetFromXML(string fileName, Convert convert)
         {
-            Console.WriteLine($"ID student: {ID}");
-            Console.WriteLine($"\tFirst Name: {FirstName}");
-            Console.WriteLine($"\tLast Name: {LastName}");
-            Console.WriteLine($"\tCourse: {Course}");
+            List<IConverter> items = new List<IConverter>();
+            XmlNode xRoot = GetRootNodeXML(fileName);
+
+            foreach (XmlNode node in xRoot)
+            {
+                items.Add(convert(node));
+            }
+            return items;
+        }
+
+        private static void ShowInfo(List<IConverter> list)
+        {
+            foreach (var item in list)
+            {
+                item.ShowInfo();
+            }
+            Console.WriteLine();
         }
     }
 }
