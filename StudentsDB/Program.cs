@@ -53,8 +53,14 @@ namespace StudentsDB
             bool isExit = false; // флаг для выхода
 
             int numberOfCommand = 0; // номер комманды
+            //если программа запускается в проекте, то использовать эти пути
             string pathStudents = "..\\..\\DB\\Students"; // пусть к файлу Student
             string pathSubjects = "..\\..\\DB\\Subjects"; // пусть к файлу Subjects
+
+            // если программа запускается через exe файл, то использовать эти пути.
+            // Так как через exe  программа будет искать в текущей дериктории
+            //string pathStudents = "DB\\Students"; // пусть к файлу Student
+            //string pathSubjects = "DB\\Subjects"; // пусть к файлу Subjects
 
             while (isExit == false)
             {
